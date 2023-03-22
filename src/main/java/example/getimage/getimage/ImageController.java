@@ -1,8 +1,7 @@
 package example.getimage.getimage;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.URL;
 
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.MediaType;
@@ -15,16 +14,16 @@ import org.springframework.web.bind.annotation.RestController;
 public class ImageController {
 
     @GetMapping("/image.jpg")
-    public ResponseEntity<InputStreamResource> getImage(@RequestParam(name = "guid") String guid) throws FileNotFoundException {
-        File image = new File("./generic.jpg");
+    public ResponseEntity<InputStreamResource> getImage(@RequestParam(name = "guid") String guid) throws IOException {
+        URL image = this.getClass().getResource("/generic.jpg");
         MediaType mimeType = MediaType.IMAGE_PNG;
-        if(image.getName().substring(image.getName().lastIndexOf(".")+1).equalsIgnoreCase("jpg")) {
+        if(image.getPath().substring(image.getPath().lastIndexOf(".")+1).equalsIgnoreCase("jpg")) {
             mimeType = MediaType.IMAGE_JPEG;
         }
 
         return ResponseEntity.ok()
             .contentType(mimeType)
-            .body(new InputStreamResource(new FileInputStream(image)));
+            .body(new InputStreamResource(image.openStream()));
     }
 
 }
